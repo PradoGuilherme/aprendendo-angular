@@ -51,6 +51,7 @@
                 $scope.addContato = function (contato) {
                     $scope.contatos.push(angular.copy(contato));
                     $scope.contato = {};
+                    $scope.contatoForm.$setPristine();
                 }
                 $scope.deleteContato = function (contatos) {
                     $scope.contatos = contatos.filter(function (contato) {
@@ -87,17 +88,23 @@
         </table>
         </hr>
         <form name="contatoForm">
-            <input class="form-control" type="text" ng-required="true" ng-model="contato.nome" name="nome" placeholder="Nome" />
-            <input class="form-control" type="text" ng-required="true" ng-model="contato.telefone" name="telefone" placeholder="Telefone" />
+            <input class="form-control" type="text" ng-required="true" ng-model="contato.nome" name="nome" placeholder="Nome" ng-minlength="10"/>
+            <input class="form-control" type="text" ng-required="true" ng-model="contato.telefone" name="telefone" placeholder="Telefone" ng-pattern="/^\d{4,5}-\d{4}$/"/>
             <select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
                 <option value=''>Selecione uma operadora</option>
             </select>
         </form>
-        <div ng-show="contatoForm.nome.$invalid" class="alert alert-danger">
+        <div ng-show="contatoForm.nome.$error.required && contatoForm.nome.$dirty" class="alert alert-danger">
             Por favor, preencha o nome!
         </div>
-        <div ng-show="contatoForm.telefone.$invalid" class="alert alert-danger">
+        <div ng-show="contatoForm.nome.$error.minlength" class="alert alert-danger">
+            O campo nome deve ter no minimo 10 caracteres
+        </div>
+        <div ng-show="contatoForm.telefone.$error.required && contatoForm.telefone.$dirty" class="alert alert-danger">
             Por favor, preencha o telefone!
+        </div>
+        <div ng-show="contatoForm.telefone.$error.pattern && contatoForm.telefone.$dirty" class="alert alert-danger">
+            O campo deve ter o formato DDDDD-DDDD
         </div>
         <button class="btn btn-primary btn-block" ng-click="addContato(contato)" ng-disabled="contatoForm.$invalid">Adicionar contato</button>
         <button class="btn btn-danger btn-block" ng-click="deleteContato(contatos)" ng-if="isContatoSelecionado(contatos)">Apagar contato</button>
